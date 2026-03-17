@@ -1,0 +1,68 @@
+---
+title: Node overview
+description: How the AzuraCast node works in n8n
+---
+
+The AzuraCast node is a single unified n8n node that exposes every operation from the official AzuraCast OpenAPI specification. You select a resource and an operation, then fill in the fields that appear — no raw HTTP configuration required.
+
+## Architecture
+
+Instead of one node per API domain, this package uses a **single AzuraCast node** with all 263 operations organized inside it. The node reads an embedded OpenAPI snapshot at build time and generates all properties, field definitions, and execution logic from that source.
+
+This means:
+
+- Every AzuraCast endpoint is available from one place in your workflow.
+- Fields for each operation (path parameters, query parameters, body fields) are rendered automatically based on OpenAPI metadata.
+- When the AzuraCast API changes, regenerating the snapshot updates the node's fields without requiring code changes.
+
+## The two main selectors
+
+Every AzuraCast node operation starts with two dropdowns:
+
+**Resource** — selects the API domain (maps directly to an AzuraCast OpenAPI tag, such as `Stations Media` or `Administration Users`).
+
+**Operation** — selects the specific endpoint within that resource (such as "List files" or "Upload file").
+
+Once you select both, the node renders the fields specific to that endpoint.
+
+## Auto-rendered fields
+
+When you select an operation, the node automatically renders:
+
+- **Required path parameters** — shown as top-level required inputs (for example, `Station ID` in `/api/station/{station_id}/files`).
+- **Required query parameters** — shown as top-level required inputs.
+- **Required body fields** — shown as top-level required inputs.
+- **Optional query parameters** — grouped under a collapsible **Optional Query Parameters** collection.
+- **Optional body fields** — grouped under a collapsible **Optional Body Fields** or **Optional Multipart Fields** collection.
+- **File upload fields** — multipart operations additionally show **Input Data Field Name** and **File Field Name** inputs.
+
+Field types (string, number, boolean, options dropdown, JSON editor) are inferred from the OpenAPI schema for each parameter.
+
+## Resource categories
+
+<CardGroup cols={2}>
+  <Card title="Administration" icon="shield">
+    Backups, Custom Fields, Debugging, General, Roles, Settings, Stations, Storage Locations, Users
+  </Card>
+  <Card title="My Account" icon="user">
+    Account info, API keys, two-factor authentication settings
+  </Card>
+  <Card title="Miscellaneous" icon="ellipsis">
+    Server-level utility and status endpoints
+  </Card>
+  <Card title="Public" icon="globe">
+    Miscellaneous, Now Playing, Stations — no API key required
+  </Card>
+  <Card title="Stations" icon="radio">
+    Broadcasting, General, HLS Streams, Media, Mount Points, Playlists, Podcasts, Queue, Remote Relays, Reports, SFTP Users, Streamers/DJs, Web Hooks
+  </Card>
+</CardGroup>
+
+## Legacy compatibility
+
+Workflows built before the unified node architecture continue to work. The execution runtime checks for legacy parameters in this order:
+
+1. **`operationId`** — if a legacy `operationId` field is present, it is used to look up the operation directly.
+2. **JSON parameter blocks** — if legacy `bodyMode`, `jsonBody`, or `rawBody` fields are populated, the node uses those values instead of the auto-rendered fields.
+
+Legacy workflows do not need to be rebuilt. New workflows should use the **Resource** and **Operation** selectors with the auto-rendered fields.

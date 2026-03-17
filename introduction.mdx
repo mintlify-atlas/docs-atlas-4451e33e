@@ -1,0 +1,73 @@
+---
+title: Introduction
+description: n8n community node for AzuraCast Web API with full operation coverage
+---
+
+# n8n-nodes-azuracast
+
+`@renebello/n8n-nodes-azuracast` is an n8n community node that connects [AzuraCast](https://www.azuracast.com/) with n8n workflows through the official AzuraCast Web API.
+
+[AzuraCast](https://www.azuracast.com/) is a self-hosted web radio platform for managing stations, media, playlists, requests, webhooks, reports, and admin operations. [n8n](https://n8n.io/) is a workflow automation platform that lets you connect services and automate tasks with a visual editor.
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Install the package in your n8n instance in minutes
+  </Card>
+  <Card title="Credentials" icon="key" href="/credentials">
+    Configure your AzuraCast API credentials
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Build your first AzuraCast workflow
+  </Card>
+  <Card title="Operations Reference" icon="book" href="/operations/public">
+    Browse all 263 available operations
+  </Card>
+</CardGroup>
+
+## What is this node?
+
+This package provides a single **AzuraCast** node that exposes every operation from the official AzuraCast OpenAPI specification. Instead of making raw HTTP calls to your AzuraCast server, you can select a resource and action directly in the n8n node editor — with all required and optional fields automatically rendered based on the OpenAPI metadata.
+
+## Coverage
+
+<Info>
+This node covers **263 out of 263** operation IDs from the official AzuraCast OpenAPI source. Every endpoint available in the AzuraCast API is accessible from n8n.
+</Info>
+
+Operations are grouped by official AzuraCast API tag/resource:
+
+<CardGroup cols={3}>
+  <Card title="Public" icon="globe">
+    Now Playing, Stations, Miscellaneous
+  </Card>
+  <Card title="My Account" icon="user">
+    Account info, API keys, two-factor auth
+  </Card>
+  <Card title="Stations" icon="radio">
+    Media, Playlists, Queues, Webhooks, Mount Points, and more
+  </Card>
+  <Card title="Administration" icon="shield">
+    Users, Roles, Settings, Backups, Storage Locations, and more
+  </Card>
+  <Card title="Miscellaneous" icon="ellipsis">
+    Server-level utilities and status endpoints
+  </Card>
+</CardGroup>
+
+## Key features
+
+- **263/263 OpenAPI operation coverage** — every AzuraCast endpoint is available
+- **Unified single node** — operations grouped by resource tag in one n8n node
+- **Auto-rendered fields** — path, query, and body parameters from OpenAPI metadata
+- **All request body types** — JSON, raw text, binary file upload, multipart form-data
+- **Smart response handling** — auto-detects JSON, text, or binary response format
+- **Public + protected endpoints** — works with or without an API key
+- **Backward compatible** — legacy `operationId` and JSON parameter workflows continue to work
+- **AI tool support** — usable as a tool node in n8n AI agent workflows
+
+## Resources
+
+- [GitHub repository](https://github.com/renebell0/n8n-nodes-azuracast)
+- [AzuraCast API documentation](https://www.azuracast.com/docs/developers/apis/)
+- [AzuraCast official OpenAPI source](https://raw.githubusercontent.com/AzuraCast/AzuraCast/main/web/static/openapi.yml)
+- [n8n community nodes documentation](https://docs.n8n.io/integrations/community-nodes/)

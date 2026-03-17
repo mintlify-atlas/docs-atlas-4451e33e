@@ -1,0 +1,79 @@
+---
+title: Installation
+description: Install n8n-nodes-azuracast in your n8n instance
+---
+
+## Prerequisites
+
+Before installing, make sure you have:
+
+- A running **n8n** instance (v1-based, self-hosted or cloud)
+- An **AzuraCast** server you can reach from your n8n instance
+- Network access between n8n and your AzuraCast base URL
+
+## Install via the n8n GUI
+
+The easiest way to install community nodes is through the n8n interface.
+
+<Steps>
+  <Step title="Open Settings">
+    In your n8n instance, click the **Settings** icon in the left sidebar, then select **Community Nodes**.
+  </Step>
+  <Step title="Install a new package">
+    Click **Install a community node**.
+  </Step>
+  <Step title="Enter the package name">
+    In the package name field, enter:
+
+    ```
+    @renebello/n8n-nodes-azuracast
+    ```
+  </Step>
+  <Step title="Accept the risk and install">
+    Acknowledge the community node warning, then click **Install**.
+  </Step>
+  <Step title="Verify the node is available">
+    After installation completes, search for **AzuraCast** in the node panel. The AzuraCast node should appear under the search results.
+  </Step>
+</Steps>
+
+## Install via npm (self-hosted)
+
+If you manage your n8n installation directly, you can install the package using your preferred package manager.
+
+<CodeGroup>
+
+```bash npm
+npm install @renebello/n8n-nodes-azuracast
+```
+
+```bash yarn
+yarn add @renebello/n8n-nodes-azuracast
+```
+
+```bash pnpm
+pnpm add @renebello/n8n-nodes-azuracast
+```
+
+</CodeGroup>
+
+After installing, restart your n8n process so it picks up the new node package.
+
+<Note>
+  The package name starts with `@renebello/n8n-nodes-` and includes `n8n-community-node-package` in its keywords, which allows n8n to discover and load it automatically.
+</Note>
+
+## Verify the installation
+
+Once n8n restarts:
+
+1. Open any workflow in the n8n editor.
+2. Click **+** to add a node and search for `AzuraCast`.
+3. The **AzuraCast** node should appear in the results.
+
+If the node does not appear, check that n8n was restarted after the npm install and that the package is listed under `node_modules/@renebello/n8n-nodes-azuracast`.
+
+## Further reading
+
+- [n8n community nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
+- [n8n community node installation guide](https://docs.n8n.io/integrations/community-nodes/installation/)

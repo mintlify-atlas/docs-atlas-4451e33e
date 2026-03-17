@@ -1,0 +1,121 @@
+---
+title: Response handling
+description: Control how the AzuraCast node handles API responses
+---
+
+The AzuraCast node can parse the API response as JSON, text, or binary data. By default it detects the correct format automatically from the operation's OpenAPI metadata.
+
+## Response formats
+
+<Tabs>
+  <Tab title="Auto">
+    The node checks the operation's `recommendedResponseFormat` value from the OpenAPI snapshot and applies it:
+
+    - `json` — for endpoints that return `application/json`
+    - `text` — for endpoints that return no content or plain text
+    - `binary` — for endpoints that return file data (for example, backup downloads)
+
+    If the operation has no declared response content type, the node defaults to `text`.
+
+    **Auto** is the default and works correctly for all standard AzuraCast endpoints.
+  </Tab>
+
+  <Tab title="JSON">
+    The response body is parsed as JSON.
+
+    If the response is an array, each item in the array becomes a separate n8n output item:
+
+    ```json
+    [
+      { "id": 1, "name": "Station One" },
+      { "id": 2, "name": "Station Two" }
+    ]
+    ```
+
+    Output items:
+
+    ```json
+    { "id": 1, "name": "Station One" }
+    ```
+    ```json
+    { "id": 2, "name": "Station Two" }
+    ```
+
+    If the response is a single JSON object, it becomes one output item.
+  </Tab>
+
+  <Tab title="Text">
+    The response body is returned as a string in the `data` field of the output JSON.
+
+    Output item:
+
+    ```json
+    {
+      "data": "OK"
+    }
+    ```
+  </Tab>
+
+  <Tab title="Binary">
+    The response body is stored as binary data in the n8n item.
+
+    Set **Output Data Field Name** to control which binary property the file is stored under (default: `data`).
+
+    The output item's JSON includes:
+
+    ```json
+    {
+      "bodyLength": 1048576
+    }
+    ```
+
+    The file itself is available in the binary property (for example, `data`) and can be passed to a Write Binary File node or an email attachment.
+  </Tab>
+</Tabs>
+
+## Return full response
+
+By default, the node returns only the response body. Enable **Return Full Response** to include HTTP metadata alongside the body.
+
+When **Return Full Response** is off (default):
+
+```json
+{
+  "id": 1,
+  "name": "Station One",
+  "is_enabled": true
+}
+```
+
+When **Return Full Response** is on:
+
+```json
+{
+  "statusCode": 200,
+  "statusMessage": "OK",
+  "headers": {
+    "content-type": "application/json",
+    "x-powered-by": "AzuraCast"
+  },
+  "body": {
+    "id": 1,
+    "name": "Station One",
+    "is_enabled": true
+  }
+}
+```
+
+For binary responses with **Return Full Response** enabled, the output JSON contains `statusCode`, `statusMessage`, `headers`, and `bodyLength`. The binary file is still stored in the binary property specified by **Output Data Field Name**.
+
+## Output data field name
+
+When **Response Format** is `binary`, the **Output Data Field Name** field controls which property in the n8n binary data object the file is stored under.
+
+- Default: `data`
+- Set to any valid property name, for example `backup` or `export`
+
+Downstream nodes that read binary data (Write Binary File, Send Email, etc.) should reference the same property name.
+
+<Note>
+The **Output Data Field Name** field is only visible when **Response Format** is set to `binary`. It has no effect in JSON or text mode.
+</Note>

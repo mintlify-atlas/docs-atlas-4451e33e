@@ -1,0 +1,243 @@
+---
+title: Stations operations
+description: Manage station content, configuration, and broadcasting
+---
+
+<Note>
+  All Stations operations require a valid API key with station-level or higher permissions. Configure your AzuraCast credentials in n8n before using these operations.
+</Note>
+
+Stations operations cover the full lifecycle of managing a radio station: uploading and organising media, building playlists, controlling the broadcast backend, managing live DJ accounts, publishing podcasts, configuring mount points and HLS streams, viewing reports, and more.
+
+<AccordionGroup>
+  <Accordion title="Stations General">
+    Station profile management, log access, quota information, custom assets, and fallback track configuration.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | Get station profile | `GET` | `/station/{station_id}/profile` | Retrieve the public profile of the station |
+    | Get editable profile | `GET` | `/station/{station_id}/profile/edit` | Get the editable station profile |
+    | Save station profile | `PUT` | `/station/{station_id}/profile/edit` | Save changes to the station profile |
+    | Update now playing metadata | `POST` | `/station/{station_id}/nowplaying/update` | Manually update the Now Playing metadata |
+    | Get quota | `GET` | `/station/{station_id}/quota` | Get current usage and quota for the station storage |
+    | Get quota by type | `GET` | `/station/{station_id}/quota/{type}` | Get quota for a specific storage location type |
+    | List station logs | `GET` | `/station/{station_id}/logs` | Return available log types for the station |
+    | View station log | `GET` | `/station/{station_id}/log/{key}` | View the contents of a specific station log |
+    | Get custom asset | `GET` | `/station/{station_id}/custom_assets/{type}` | Get the details of a custom asset |
+    | Upload custom asset | `POST` | `/station/{station_id}/custom_assets/{type}` | Upload a new custom asset |
+    | Delete custom asset | `DELETE` | `/station/{station_id}/custom_assets/{type}` | Remove a custom asset |
+    | Get fallback track | `GET` | `/station/{station_id}/fallback` | Get the custom fallback track |
+    | Upload fallback track | `POST` | `/station/{station_id}/fallback` | Set a new custom fallback track |
+    | Delete fallback track | `DELETE` | `/station/{station_id}/fallback` | Remove the custom fallback track |
+  </Accordion>
+
+  <Accordion title="Stations Media">
+    Upload, manage, and organise media files in the station library. Supports individual file operations, bulk CSV imports, directory management, waveform data, and batch actions.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | List files | `GET` | `/station/{station_id}/files` | List all uploaded media files |
+    | List files by path | `GET` | `/station/{station_id}/files/list` | List files in a media directory by path |
+    | Get file | `GET` | `/station/{station_id}/file/{id}` | Retrieve details for a single file |
+    | Upload file (multipart) | `POST` | `/station/{station_id}/files` | Upload a new media file |
+    | Upload and process file | `POST` | `/station/{station_id}/files/upload` | Upload and process a new media file |
+    | Edit file | `PUT` | `/station/{station_id}/file/{id}` | Update metadata for a single file |
+    | Delete file | `DELETE` | `/station/{station_id}/file/{id}` | Delete a single file |
+    | Play file by ID | `GET` | `/station/{station_id}/file/{id}/play` | Download or stream a file by ID |
+    | Play file by song ID | `GET` | `/station/{station_id}/file/{song_id}/play` | Download or stream a file by song unique ID |
+    | Download file by path | `GET` | `/station/{station_id}/files/download` | Download a file by relative path |
+    | List directories | `GET` | `/station/{station_id}/files/directories` | List directories for moving or renaming |
+    | Create directory | `POST` | `/station/{station_id}/files/mkdir` | Create a new directory in the media library |
+    | Rename file or directory | `PUT` | `/station/{station_id}/files/rename` | Rename specified files or directories |
+    | Batch action | `PUT` | `/station/{station_id}/files/batch` | Perform a batch action on files or directories |
+    | Get media art | `DELETE` | `/station/{station_id}/art/{media_id}` | Remove the album art for a track |
+    | Set media art | `POST` | `/station/{station_id}/art/{media_id}` | Upload album art for a track |
+    | Get waveform data | `GET` | `/station/{station_id}/waveform/{media_id}` | Get cached waveform data for the Visual Cue Editor |
+    | Save waveform data | `POST` | `/station/{station_id}/waveform/{media_id}` | Save cached waveform data |
+    | Bulk media download | `GET` | `/station/{station_id}/files/bulk` | Download a CSV of all station media |
+    | Bulk media preview | `POST` | `/station/{station_id}/files/bulk/preview` | Preview changes from a bulk media CSV |
+    | Bulk media upload | `POST` | `/station/{station_id}/files/bulk` | Upload a CSV to update station media in bulk |
+  </Accordion>
+
+  <Accordion title="Stations Playlists">
+    Create, configure, and manage playlists. Supports scheduling, ordering, import/export, and bulk operations.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | List playlists | `GET` | `/station/{station_id}/playlists` | List all current playlists |
+    | Get playlist | `GET` | `/station/{station_id}/playlist/{id}` | Retrieve details for a single playlist |
+    | Create playlist | `POST` | `/station/{station_id}/playlists` | Create a new playlist |
+    | Edit playlist | `PUT` | `/station/{station_id}/playlist/{id}` | Update playlist details |
+    | Delete playlist | `DELETE` | `/station/{station_id}/playlist/{id}` | Delete a single playlist |
+    | Toggle playlist | `PUT` | `/station/{station_id}/playlist/{id}/toggle` | Enable or disable a playlist |
+    | Empty playlist | `DELETE` | `/station/{station_id}/playlist/{id}/empty` | Remove all songs from a song-based playlist |
+    | Clone playlist | `POST` | `/station/{station_id}/playlist/{id}/clone` | Create a copy of a playlist |
+    | Export playlist | `GET` | `/station/{station_id}/playlist/{id}/export/{format}` | Export playlist in PLS or M3U format |
+    | Import playlist | `POST` | `/station/{station_id}/playlist/{id}/import` | Import songs from a PLS or M3U file |
+    | Get playlist order | `GET` | `/station/{station_id}/playlist/{id}/order` | Get sequential track order |
+    | Set playlist order | `PUT` | `/station/{station_id}/playlist/{id}/order` | Set sequential track order |
+    | Get playback queue | `GET` | `/station/{station_id}/playlist/{id}/queue` | Get the current playback queue for the playlist |
+    | Clear playback queue | `DELETE` | `/station/{station_id}/playlist/{id}/queue` | Reset the internal playback queue |
+    | Reshuffle playlist | `PUT` | `/station/{station_id}/playlist/{id}/reshuffle` | Re-shuffle a shuffled playlist |
+    | Get apply-to directories | `GET` | `/station/{station_id}/playlist/{id}/apply-to` | Get directories the playlist can be applied to |
+    | Apply playlist to directories | `PUT` | `/station/{station_id}/playlist/{id}/apply-to` | Apply the playlist to specified directories |
+  </Accordion>
+
+  <Accordion title="Stations Queue">
+    Inspect and manage the upcoming song playback queue for a station.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | Get queue | `GET` | `/station/{station_id}/queue` | Return information about the upcoming playback queue |
+    | Get queue item | `GET` | `/station/{station_id}/queue/{id}` | Retrieve details of a single queued item |
+    | Delete queue item | `DELETE` | `/station/{station_id}/queue/{id}` | Remove a single item from the queue |
+  </Accordion>
+
+  <Accordion title="Stations Podcasts">
+    Create and manage podcast feeds and episodes, including artwork and media file uploads.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | List podcasts | `GET` | `/station/{station_id}/podcasts` | List all current podcasts |
+    | Get podcast | `GET` | `/station/{station_id}/podcast/{id}` | Retrieve details for a single podcast |
+    | Create podcast | `POST` | `/station/{station_id}/podcasts` | Create a new podcast |
+    | Edit podcast | `PUT` | `/station/{station_id}/podcast/{id}` | Update a podcast |
+    | Delete podcast | `DELETE` | `/station/{station_id}/podcast/{id}` | Delete a podcast |
+    | Set podcast art | `POST` | `/station/{station_id}/podcast/{podcast_id}/art` | Upload album art for a podcast |
+    | Delete podcast art | `DELETE` | `/station/{station_id}/podcast/{podcast_id}/art` | Remove album art from a podcast |
+    | Get associated playlists | `GET` | `/station/{station_id}/podcasts/playlists` | List playlists that can be associated with a podcast |
+    | List episodes | `GET` | `/station/{station_id}/podcast/{podcast_id}/episodes` | List all episodes for a podcast |
+    | Get episode | `GET` | `/station/{station_id}/podcast/{podcast_id}/episode/{id}` | Retrieve details for a single episode |
+    | Create episode | `POST` | `/station/{station_id}/podcast/{podcast_id}/episodes` | Create a new podcast episode |
+    | Edit episode | `PUT` | `/station/{station_id}/podcast/{podcast_id}/episode/{id}` | Update an episode |
+    | Delete episode | `DELETE` | `/station/{station_id}/podcast/{podcast_id}/episode/{id}` | Delete an episode |
+    | Set episode art | `POST` | `/station/{station_id}/podcast/{podcast_id}/episode/{episode_id}/art` | Upload album art for an episode |
+    | Delete episode art | `DELETE` | `/station/{station_id}/podcast/{podcast_id}/episode/{episode_id}/art` | Remove episode art |
+    | Set episode media | `POST` | `/station/{station_id}/podcast/{podcast_id}/episode/{episode_id}/media` | Upload the audio file for an episode |
+    | Delete episode media | `DELETE` | `/station/{station_id}/podcast/{podcast_id}/episode/{episode_id}/media` | Remove the audio file for an episode |
+  </Accordion>
+
+  <Accordion title="Stations Web Hooks">
+    Configure webhooks that fire on station events such as song changes and listener count updates.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | List webhooks | `GET` | `/station/{station_id}/webhooks` | List all current web hooks |
+    | Get webhook | `GET` | `/station/{station_id}/webhook/{id}` | Retrieve details for a single web hook |
+    | Create webhook | `POST` | `/station/{station_id}/webhooks` | Create a new web hook |
+    | Edit webhook | `PUT` | `/station/{station_id}/webhook/{id}` | Update a web hook |
+    | Delete webhook | `DELETE` | `/station/{station_id}/webhook/{id}` | Delete a web hook |
+    | Clone webhook | `POST` | `/station/{station_id}/webhook/{id}/clone` | Duplicate a web hook |
+    | Toggle webhook | `PUT` | `/station/{station_id}/webhook/{id}/toggle` | Enable or disable a web hook |
+    | Test webhook | `PUT` | `/station/{station_id}/webhook/{id}/test` | Send a test dispatch using current Now Playing data |
+    | View test log | `GET` | `/station/{station_id}/webhooks/{id}/test-log/{path}` | View the contents of a webhook test dispatch log |
+  </Accordion>
+
+  <Accordion title="Stations Broadcasting">
+    Control the radio frontend (Icecast, Shoutcast) and backend (Liquidsoap) services, manage Liquidsoap configuration, and handle Stereo Tool integration.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | Get service status | `GET` | `/station/{station_id}/status` | Retrieve the current status of all broadcast services |
+    | Restart all services | `POST` | `/station/{station_id}/restart` | Restart all services associated with the broadcast |
+    | Control backend (Liquidsoap) | `POST` | `/station/{station_id}/backend/{action}` | Perform service actions on the radio backend |
+    | Control frontend | `POST` | `/station/{station_id}/frontend/{action}` | Perform service actions on the radio frontend |
+    | Get Liquidsoap config | `GET` | `/station/{station_id}/liquidsoap-config` | Get the generated and editable Liquidsoap config |
+    | Save Liquidsoap config | `PUT` | `/station/{station_id}/liquidsoap-config` | Save the editable sections of the Liquidsoap config |
+    | Export Liquidsoap config | `GET` | `/station/{station_id}/liquidsoap-config/export` | Download an archive of all Liquidsoap configuration |
+    | Import Liquidsoap config | `POST` | `/station/{station_id}/liquidsoap-config/import` | Restore a previously exported Liquidsoap config archive |
+    | Get Stereo Tool config | `GET` | `/station/{station_id}/stereo-tool-configuration` | Get the Stereo Tool configuration file |
+    | Upload Stereo Tool config | `POST` | `/station/{station_id}/stereo-tool-configuration` | Update the Stereo Tool configuration file |
+    | Delete Stereo Tool config | `DELETE` | `/station/{station_id}/stereo-tool-configuration` | Remove the Stereo Tool configuration file |
+  </Accordion>
+
+  <Accordion title="Stations Mount Points">
+    Create and manage Icecast/Shoutcast mount points, including intro track uploads.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | List mount points | `GET` | `/station/{station_id}/mounts` | List all current mount points |
+    | Get mount point | `GET` | `/station/{station_id}/mount/{id}` | Retrieve details for a single mount point |
+    | Create mount point | `POST` | `/station/{station_id}/mounts` | Create a new mount point |
+    | Edit mount point | `PUT` | `/station/{station_id}/mount/{id}` | Update a mount point |
+    | Delete mount point | `DELETE` | `/station/{station_id}/mount/{id}` | Delete a mount point |
+    | Get intro track | `GET` | `/station/{station_id}/mount/{id}/intro` | Get the intro track for a mount point |
+    | Upload intro track | `POST` | `/station/{station_id}/mount/{id}/intro` | Update the intro track for a mount point |
+    | Delete intro track | `DELETE` | `/station/{station_id}/mount/{id}/intro` | Remove the intro track from a mount point |
+  </Accordion>
+
+  <Accordion title="Stations HLS Streams">
+    Manage HTTP Live Streaming (HLS) streams for a station.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | List HLS streams | `GET` | `/station/{station_id}/hls_streams` | List all current HLS streams |
+    | Get HLS stream | `GET` | `/station/{station_id}/hls_stream/{id}` | Retrieve details for a single HLS stream |
+    | Create HLS stream | `POST` | `/station/{station_id}/hls_streams` | Create a new HLS stream |
+    | Edit HLS stream | `PUT` | `/station/{station_id}/hls_stream/{id}` | Update an HLS stream |
+    | Delete HLS stream | `DELETE` | `/station/{station_id}/hls_stream/{id}` | Delete an HLS stream |
+  </Accordion>
+
+  <Accordion title="Stations Remote Relays">
+    Configure remote relay connections that forward the station stream to external services.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | List remote relays | `GET` | `/station/{station_id}/remotes` | List all current remote relays |
+    | Get remote relay | `GET` | `/station/{station_id}/remote/{id}` | Retrieve details for a single remote relay |
+    | Create remote relay | `POST` | `/station/{station_id}/remotes` | Create a new remote relay |
+    | Edit remote relay | `PUT` | `/station/{station_id}/remote/{id}` | Update a remote relay |
+    | Delete remote relay | `DELETE` | `/station/{station_id}/remote/{id}` | Delete a remote relay |
+  </Accordion>
+
+  <Accordion title="Stations Reports">
+    Access listener analytics, song history, requests, and compliance reports.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | Get song history | `GET` | `/station/{station_id}/history` | Return song playback history for the station |
+    | Get current listeners | `GET` | `/station/{station_id}/listeners` | Return detailed information about current listeners |
+    | Get report charts | `GET` | `/station/{station_id}/reports/overview/charts` | Get chart data for station reports |
+    | Best and worst songs | `GET` | `/station/{station_id}/reports/overview/best-and-worst` | Best and worst performing songs report |
+    | Listeners by browser | `GET` | `/station/{station_id}/reports/overview/by-browser` | Listener breakdown by browser |
+    | Listeners by client | `GET` | `/station/{station_id}/reports/overview/by-client` | Listener breakdown by client |
+    | Listeners by country | `GET` | `/station/{station_id}/reports/overview/by-country` | Listener breakdown by country |
+    | Listeners by listening time | `GET` | `/station/{station_id}/reports/overview/by-listening-time` | Listener breakdown by session duration |
+    | Listeners by stream | `GET` | `/station/{station_id}/reports/overview/by-stream` | Listener breakdown by stream |
+    | List song requests | `GET` | `/station/{station_id}/reports/requests` | List pending and fulfilled song requests |
+    | Delete song request | `DELETE` | `/station/{station_id}/reports/requests/{request_id}` | Delete a single pending song request |
+    | Clear all requests | `POST` | `/station/{station_id}/reports/requests/clear` | Clear all unplayed station requests |
+    | SoundExchange report | `GET` | `/station/{station_id}/reports/soundexchange` | Generate a SoundExchange royalty report |
+  </Accordion>
+
+  <Accordion title="Stations SFTP Users">
+    Manage SFTP user accounts that allow direct file uploads to the station media library.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | List SFTP users | `GET` | `/station/{station_id}/sftp-users` | List all current SFTP users |
+    | Get SFTP user | `GET` | `/station/{station_id}/sftp-user/{id}` | Retrieve details for a single SFTP user |
+    | Create SFTP user | `POST` | `/station/{station_id}/sftp-users` | Create a new SFTP user |
+    | Edit SFTP user | `PUT` | `/station/{station_id}/sftp-user/{id}` | Update an SFTP user |
+    | Delete SFTP user | `DELETE` | `/station/{station_id}/sftp-user/{id}` | Delete an SFTP user |
+  </Accordion>
+
+  <Accordion title="Stations Streamers/DJs">
+    Manage live DJ accounts, view and manage broadcast recordings.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | List streamers | `GET` | `/station/{station_id}/streamers` | List all Streamer/DJ accounts |
+    | Get streamer | `GET` | `/station/{station_id}/streamer/{id}` | Retrieve details for a single Streamer/DJ account |
+    | Create streamer | `POST` | `/station/{station_id}/streamers` | Create a new Streamer/DJ account |
+    | Edit streamer | `PUT` | `/station/{station_id}/streamer/{id}` | Update a Streamer/DJ account |
+    | Delete streamer | `DELETE` | `/station/{station_id}/streamer/{id}` | Delete a Streamer/DJ account |
+    | Set streamer art | `POST` | `/station/{station_id}/streamer/{id}/art` | Upload default album art for a streamer |
+    | Delete streamer art | `DELETE` | `/station/{station_id}/streamer/{id}/art` | Remove the default album art for a streamer |
+    | List all broadcasts | `GET` | `/station/{station_id}/streamers/broadcasts` | List all broadcasts for the station |
+    | List streamer broadcasts | `GET` | `/station/{station_id}/streamer/{id}/broadcasts` | List broadcasts for a specific streamer |
+    | Download broadcast | `GET` | `/station/{station_id}/streamer/{id}/broadcast/{broadcast_id}/download` | Download a specific broadcast recording |
+    | Delete broadcast | `DELETE` | `/station/{station_id}/streamer/{id}/broadcast/{broadcast_id}` | Remove a broadcast recording |
+    | Batch broadcast action | `POST` | `/station/{station_id}/streamer/{id}/broadcasts/batch` | Perform batch actions on broadcast recordings |
+  </Accordion>
+</AccordionGroup>

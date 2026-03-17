@@ -1,0 +1,130 @@
+---
+title: Advanced options
+description: Additional headers, body overrides, and response control
+---
+
+The advanced options in the AzuraCast node give you fine-grained control over request headers, body format, and response handling. These settings are available on every operation and are collapsed by default so they do not clutter the common workflow.
+
+## Send additional headers
+
+Toggle **Send Additional Headers** to reveal the **Additional Headers (JSON)** field. Use this to include arbitrary HTTP headers in the request.
+
+```json
+{
+  "X-Custom-Header": "my-value",
+  "Accept-Language": "en-US"
+}
+```
+
+<Note>
+Authentication headers (`X-API-Key`, `Authorization`) are added automatically from your AzuraCast credentials. You do not need to set them here.
+</Note>
+
+When to use additional headers:
+- The AzuraCast endpoint requires a non-standard header.
+- You are testing a specific `Accept` or `Content-Type` override.
+- You need to pass a header required by a reverse proxy in front of AzuraCast.
+
+## Body mode override
+
+The **Body Mode Override** dropdown controls how the request body is built. The default value is **Auto**, which uses the operation-specific fields rendered from OpenAPI metadata.
+
+| Mode | When to use |
+|---|---|
+| **Auto** | Default. Uses the fields rendered for the selected operation. |
+| **JSON** | When you want to write the full JSON body manually instead of filling individual fields. |
+| **Multipart Form-Data** | When you need to combine custom form fields and a file upload manually. |
+| **Binary** | When you need to send the raw binary content of an n8n input item as the entire request body. |
+| **Raw** | When the endpoint expects plain text or XML instead of JSON. |
+| **None** | When you want to suppress the body entirely, for example when debugging a GET endpoint. |
+
+<Note>
+Use **Auto** for all standard AzuraCast operations. Override only when the auto-rendered fields do not produce the correct request for an edge case or a non-standard endpoint behavior.
+</Note>
+
+### Manual JSON body
+
+Visible when **Body Mode Override** is `JSON`. Enter a complete JSON object:
+
+```json
+{
+  "name": "My Playlist",
+  "is_enabled": 1,
+  "include_in_requests": true
+}
+```
+
+### Manual raw body
+
+Visible when **Body Mode Override** is `Raw`. The text you enter is sent as-is as the request body.
+
+### Manual input data field name
+
+Visible when **Body Mode Override** is `Binary` or `Multipart Form-Data`. Enter the name of the binary property from the input n8n item that contains the file (default: `data`).
+
+### Manual multipart file field name
+
+Visible when **Body Mode Override** is `Multipart Form-Data`. Enter the multipart form field name under which the file will be submitted (default: `file`).
+
+### Manual multipart fields (JSON)
+
+Visible when **Body Mode Override** is `Multipart Form-Data`. Enter a JSON object of key/value pairs to send as text fields alongside the file:
+
+```json
+{
+  "title": "Intro Track",
+  "artist": "DJ Example",
+  "is_enabled": "1"
+}
+```
+
+## Response format
+
+The **Response Format** dropdown controls how the response body is interpreted. The default value is **Auto**, which reads the `recommendedResponseFormat` from the OpenAPI snapshot for the selected operation.
+
+| Format | Output |
+|---|---|
+| **Auto** | Detects the format from the operation's OpenAPI metadata. |
+| **JSON** | Parses the response as JSON and returns it as n8n JSON item(s). |
+| **Text** | Returns the raw response as a string in the `data` field. |
+| **Binary** | Stores the response as binary data under the property specified in **Output Data Field Name**. |
+
+<Note>
+Use **Auto** for all standard AzuraCast operations. Override the format when you receive an unexpected content type or when the operation returns a file that is not correctly detected as binary.
+</Note>
+
+## Output data field name
+
+Visible when **Response Format** is `Binary`. Controls the name of the binary property in the output n8n item where the file is stored.
+
+- Default: `data`
+- Can be any valid property name (for example, `backup`, `audio`, `export`)
+
+<Tip>
+If you chain the AzuraCast node into a Write Binary File or Send Email node, set **Output Data Field Name** to match the binary property name expected by the downstream node.
+</Tip>
+
+## Return full response
+
+When **Return Full Response** is off (the default), the node returns only the response body as the output item.
+
+When **Return Full Response** is on, the output item includes:
+
+- `statusCode` — HTTP status code (for example, `200`, `201`, `404`)
+- `statusMessage` — HTTP status message (for example, `OK`)
+- `headers` — response headers as a JSON object
+- `body` — the response body (for JSON and text responses)
+- `bodyLength` — size of the body in bytes (for binary responses)
+
+<Note>
+Enable **Return Full Response** when you need to inspect the HTTP status code or headers, for example when building error-handling logic in your workflow.
+</Note>
+
+## Auto vs. manual: when to override
+
+The auto mode covers all 263 standard AzuraCast operations without configuration. Manual overrides are useful in these situations:
+
+- You are calling a non-standard or custom endpoint on a modified AzuraCast installation.
+- The operation returns a content type that the auto-detection does not handle correctly.
+- You want to send a specific body structure that differs from the OpenAPI schema.
+- You are debugging and want to inspect headers or status codes from the response.

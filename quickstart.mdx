@@ -1,80 +1,133 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quickstart
+description: Build your first AzuraCast workflow in n8n
 ---
 
-## Get started in three steps
+This guide walks through two complete workflow examples so you can start using the AzuraCast node right away.
 
-Get your documentation site running locally and make your first customization.
+## Example 1: Get Now Playing data from your radio station
 
-### Step 1: Set up your local environment
+The Now Playing endpoint is public — no API key required. This is the fastest way to verify that your credentials and node setup are working.
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+<Steps>
+  <Step title="Add the AzuraCast node">
+    Open a workflow in n8n, click **+** to add a node, search for `AzuraCast`, and select the **AzuraCast** node.
+  </Step>
+  <Step title="Connect your credentials">
+    In the node settings, click the **Credentials** dropdown and select an existing **AzuraCast API** credential, or create a new one.
 
-### Step 2: Deploy your changes
+    For this example you only need the **Base URL** — leave the API Key empty.
 
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+    See [Credentials](/credentials) for setup instructions.
+  </Step>
+  <Step title="Select the Resource">
+    In the **Resource** dropdown, select **Public Now Playing**.
+  </Step>
+  <Step title="Select the Operation">
+    In the **Operation** dropdown you have two options:
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+    - **Get now playing** — returns Now Playing data for all stations at once as an array.
+    - **Get now playing for station** — returns Now Playing data for a single station. When selected, a **Station ID** field appears; enter the short name or numeric ID of your station (e.g. `azuratest_radio` or `1`).
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
+    For a quick test, select **Get now playing** to fetch all stations.
+  </Step>
+  <Step title="Execute and inspect the response">
+    Click **Execute node**. The output will contain one item per station, each with fields such as:
 
-### Step 3: Go live
+    ```json
+    {
+      "station": {
+        "id": 1,
+        "name": "AzuraTest Radio",
+        "shortcode": "azuratest_radio",
+        "listen_url": "https://radio.example.com/radio/8000/radio.mp3"
+      },
+      "now_playing": {
+        "song": {
+          "title": "Example Song",
+          "artist": "Example Artist",
+          "album": "Example Album"
+        },
+        "elapsed": 42,
+        "remaining": 178
+      },
+      "listeners": {
+        "current": 12,
+        "total": 18
+      },
+      "live": {
+        "is_live": false
+      }
+    }
+    ```
 
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
+    You can reference any of these fields in downstream nodes using n8n expressions such as `{{ $json.now_playing.song.title }}`.
+  </Step>
+</Steps>
 
-## Next steps
+<Tip>
+  Connect the AzuraCast node to a **Set** node or **Item Lists** node to extract only the fields you need before passing data to other services.
+</Tip>
 
-Now that you have your docs running, explore these key features:
+## Example 2: Upload media to a station
 
-<CardGroup cols={2}>
+This example shows how to use a multipart file upload operation. An API key is required.
 
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
+<Steps>
+  <Step title="Provide a binary file to the workflow">
+    Before the AzuraCast node, add a node that produces a binary item — for example:
+    - A **Read Binary File** node pointing to a local audio file
+    - An **HTTP Request** node that downloads an audio file
+    - A **Webhook** node that receives a file upload
 
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
+    The binary data should be stored in a named property (the default is `data`).
+  </Step>
+  <Step title="Add the AzuraCast node">
+    Click **+**, search for `AzuraCast`, and select the **AzuraCast** node.
+  </Step>
+  <Step title="Connect credentials with an API key">
+    Select or create an **AzuraCast API** credential that includes a valid **API Key**. Media upload is a protected endpoint.
+  </Step>
+  <Step title="Select the Resource">
+    In the **Resource** dropdown, select **Stations Media**.
+  </Step>
+  <Step title="Select the Operation">
+    In the **Operation** dropdown, select **Upload media**.
 
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
+    The following fields will appear:
 
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
+    | Field | Description |
+    |-------|-------------|
+    | **Station ID** | The numeric ID or shortcode of the target station, e.g. `1` or `azuratest_radio` |
+    | **Input Data Field Name** | The name of the binary property in the incoming item that holds the file (default: `data`) |
+    | **File Field Name** | The multipart form-data field name to use when sending the file to the API (default: `file`) |
+  </Step>
+  <Step title="Fill in the required fields">
+    - Set **Station ID** to your station's ID.
+    - Set **Input Data Field Name** to the binary property name from the upstream node (e.g. `data`).
+    - Leave **File Field Name** as `file` unless your AzuraCast version requires a different field name.
+  </Step>
+  <Step title="Execute and verify">
+    Click **Execute node**. A successful upload returns a JSON response with the uploaded file's metadata:
 
-</CardGroup>
+    ```json
+    {
+      "id": 42,
+      "song_id": "abc123def456",
+      "text": "Example Artist - Example Song",
+      "title": "Example Song",
+      "artist": "Example Artist",
+      "album": "",
+      "path": "example-song.mp3",
+      "length": 220,
+      "length_text": "3:40"
+    }
+    ```
+
+    The uploaded file will be visible in the AzuraCast Media Manager for the station you specified.
+  </Step>
+</Steps>
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+  The AzuraCast node supports all 263 operations from the official AzuraCast OpenAPI specification. Resources are grouped by API tag — for example, **Administration General**, **Administration Users**, **Stations Playlists**, **Stations Web Hooks**, and more. Explore the **Resource** dropdown to see all available groups.
 </Note>

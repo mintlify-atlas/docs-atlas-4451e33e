@@ -1,0 +1,189 @@
+---
+title: Administration operations
+description: Server-wide administrative operations requiring admin privileges
+---
+
+<Warning>
+  All Administration operations require an **administrator-level API key**. Station-level keys do not have access to these endpoints. Misconfigured calls may modify system-wide settings or permanently delete data.
+</Warning>
+
+Administration operations provide full server-level control over AzuraCast: managing users and roles, creating and cloning stations, configuring global settings, running backups, installing third-party binaries, and debugging the system internals. A **Miscellaneous** group covers dashboard and Prometheus utilities available to privileged users.
+
+<AccordionGroup>
+  <Accordion title="Administration General">
+    Server infrastructure management: service restarts, log access, API key administration, GeoLite database, third-party binary installs, audit log, and ACME certificate management.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | Get server stats | `GET` | `/admin/server/stats` | Return CPU usage statistics |
+    | List system services | `GET` | `/admin/services` | List the status of essential system services |
+    | Restart service | `POST` | `/admin/services/restart/{service}` | Restart a specified service |
+    | Get update status | `GET` | `/admin/updates` | Show installation and update status |
+    | Trigger web update | `PUT` | `/admin/updates` | Attempt a web-based update |
+    | Get audit log | `GET` | `/admin/auditlog` | List all audit log actions |
+    | List system logs | `GET` | `/admin/logs` | List available log types |
+    | View log | `GET` | `/admin/log/{key}` | View a specific log's contents |
+    | Send test email | `POST` | `/admin/send-test-message` | Send a test email to verify mail delivery |
+    | List API keys | `GET` | `/admin/api-keys` | List all API keys across the system |
+    | Create API key | `POST` | `/admin/api-keys` | Create an API key for a specified user |
+    | Delete API key | `DELETE` | `/admin/api-key/{id}` | Delete a single API key |
+    | Get GeoLite status | `GET` | `/admin/geolite` | Get the MaxMind GeoLite database status |
+    | Set GeoLite key | `POST` | `/admin/geolite` | Set the GeoLite license key |
+    | Get custom asset | `GET` | `/admin/custom_assets/{type}` | Get details of a custom asset |
+    | Upload custom asset | `POST` | `/admin/custom_assets/{type}` | Upload a custom asset |
+    | Delete custom asset | `DELETE` | `/admin/custom_assets/{type}` | Remove a custom asset |
+    | Get Shoutcast info | `GET` | `/admin/shoutcast` | Get details about the Shoutcast installation |
+    | Upload Shoutcast binary | `POST` | `/admin/shoutcast` | Upload a new Shoutcast binary |
+    | Delete Shoutcast binary | `DELETE` | `/admin/shoutcast` | Remove the Shoutcast binary |
+    | Get Stereo Tool info | `GET` | `/admin/stereo_tool` | Get information about the Stereo Tool installation |
+    | Upload Stereo Tool binary | `POST` | `/admin/stereo_tool` | Upload a new Stereo Tool binary |
+    | Delete Stereo Tool binary | `DELETE` | `/admin/stereo_tool` | Remove the Stereo Tool binary |
+    | Get RSAS status | `GET` | `/admin/rsas` | Get the Rocket Streaming Audio Server status |
+    | Upload RSAS binary | `POST` | `/admin/rsas` | Upload a new RSAS binary |
+    | Delete RSAS binary | `DELETE` | `/admin/rsas` | Remove the RSAS installation |
+    | Upload RSAS license | `POST` | `/admin/rsas/license` | Upload an RSAS license key |
+    | Delete RSAS license | `DELETE` | `/admin/rsas/license` | Remove the RSAS license |
+    | Generate ACME certificate | `PUT` | `/admin/acme` | Generate or renew an ACME (Let's Encrypt) certificate |
+    | View ACME log | `GET` | `/admin/acme-log/{path}` | View the log of a manual ACME renewal |
+    | List relay instances | `GET` | `/admin/relays/list` | List all active AzuraRelay instances |
+    | Get relay details (internal) | `GET` | `/internal/relays` | Returns relay details for all relayable stations |
+  </Accordion>
+
+  <Accordion title="Administration Users">
+    Create, update, and delete user accounts across the installation. Also manages login tokens for programmatic authentication.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | List users | `GET` | `/admin/users` | List all users in the system |
+    | Get user | `GET` | `/admin/user/{id}` | Retrieve details for a single user |
+    | Create user | `POST` | `/admin/users` | Create a new user |
+    | Edit user | `PUT` | `/admin/user/{id}` | Update details of a user |
+    | Delete user | `DELETE` | `/admin/user/{id}` | Delete a user |
+    | List login tokens | `GET` | `/admin/login_tokens` | List all unexpired login tokens |
+    | Get login token | `GET` | `/admin/login_token/{id}` | Retrieve details for a single login token |
+    | Create login token | `POST` | `/admin/login_tokens` | Create a new login token |
+    | Delete login token | `DELETE` | `/admin/login_token/{id}` | Delete a login token |
+
+    **Parameters**
+
+    - `id` — The numeric ID of the user or token returned by the corresponding list or create operation.
+  </Accordion>
+
+  <Accordion title="Administration Roles">
+    Define roles that group permissions and assign them to user accounts.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | List roles | `GET` | `/admin/roles` | List all roles in the system |
+    | Get role | `GET` | `/admin/role/{id}` | Retrieve details for a single role |
+    | Create role | `POST` | `/admin/roles` | Create a new role |
+    | Edit role | `PUT` | `/admin/role/{id}` | Update a role |
+    | Delete role | `DELETE` | `/admin/role/{id}` | Delete a role |
+    | List all permissions | `GET` | `/admin/permissions` | Return a list of all available permissions |
+  </Accordion>
+
+  <Accordion title="Administration Settings">
+    Read and update global server-level configuration settings.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | Get settings | `GET` | `/admin/settings` | List the current values of all editable system settings |
+    | Update settings | `PUT` | `/admin/settings` | Update any combination of system settings |
+
+    <Warning>
+      Modifying settings affects the entire installation. Changes take effect immediately.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="Administration Stations">
+    Create, clone, edit, and delete stations from the administration panel. These operations have broader scope than the station-level profile operations.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | List stations | `GET` | `/admin/stations` | List all stations in the system |
+    | Get station | `GET` | `/admin/station/{id}` | Retrieve admin-level details for a station |
+    | Create station | `POST` | `/admin/stations` | Create a new station |
+    | Edit station | `PUT` | `/admin/station/{id}` | Update station details |
+    | Delete station | `DELETE` | `/admin/station/{id}` | Permanently delete a station |
+    | Clone station | `POST` | `/admin/station/{id}/clone` | Clone a station, preserving selected settings |
+    | List storage locations | `GET` | `/admin/stations/storage-locations` | List storage locations available for station assignment |
+
+    <Warning>
+      Deleting a station is irreversible and removes all associated media, playlists, and configuration.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="Administration Backups">
+    Manage server backups: list existing backups, initiate a manual backup, download or delete backup archives, and view backup logs.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | List backups | `GET` | `/admin/backups` | Return a list of all current backups |
+    | Run backup | `POST` | `/admin/backups/run` | Initialise a manual backup |
+    | Download backup | `GET` | `/admin/backups/download/{path}` | Download a specific backup archive |
+    | Delete backup | `DELETE` | `/admin/backups/delete/{path}` | Delete a specific backup |
+    | View backup log | `GET` | `/admin/backups/log/{path}` | View the log output of a backup run |
+
+    **Parameters**
+
+    - `path` — The path identifier of the backup, returned by the list operation.
+  </Accordion>
+
+  <Accordion title="Administration Storage Locations">
+    Configure storage backends (local filesystem, S3-compatible, SFTP) used by stations for media and recordings.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | List storage locations | `GET` | `/admin/storage_locations` | List all storage locations in the system |
+    | Get storage location | `GET` | `/admin/storage_location/{id}` | Retrieve details for a single storage location |
+    | Create storage location | `POST` | `/admin/storage_locations` | Create a new storage location |
+    | Edit storage location | `PUT` | `/admin/storage_location/{id}` | Update a storage location |
+    | Delete storage location | `DELETE` | `/admin/storage_location/{id}` | Delete a storage location |
+  </Accordion>
+
+  <Accordion title="Administration Custom Fields">
+    Define custom metadata fields that can be attached to media files across all stations.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | List custom fields | `GET` | `/admin/custom_fields` | List all custom fields in the system |
+    | Get custom field | `GET` | `/admin/custom_field/{id}` | Retrieve details for a single custom field |
+    | Create custom field | `POST` | `/admin/custom_fields` | Create a new custom field |
+    | Edit custom field | `PUT` | `/admin/custom_field/{id}` | Update a custom field |
+    | Delete custom field | `DELETE` | `/admin/custom_field/{id}` | Delete a custom field |
+  </Accordion>
+
+  <Accordion title="Administration Debugging">
+    Utilities for inspecting and manipulating internal system state. Intended for troubleshooting and development purposes.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | List message queues | `GET` | `/admin/debug/queues` | List all internal message queues |
+    | Clear application cache | `PUT` | `/admin/debug/clear-cache` | Clear the Redis application cache |
+    | Clear message queue | `PUT` | `/admin/debug/clear-queue/{queue}` | Clear a specific message queue |
+    | List sync tasks | `GET` | `/admin/debug/sync-tasks` | List all scheduled sync tasks and last run times |
+    | Run sync task | `PUT` | `/admin/debug/sync/{task}` | Manually trigger a scheduled sync task |
+    | List stations (debug) | `GET` | `/admin/debug/stations` | List all stations with their debug links |
+    | Get next song | `PUT` | `/admin/debug/station/{station_id}/nextsong` | Get the next song the AutoDJ will play |
+    | Get now playing (debug) | `PUT` | `/admin/debug/station/{station_id}/nowplaying` | Generate raw Now Playing data for a station |
+    | Clear station queue | `PUT` | `/admin/debug/station/{station_id}/clearqueue` | Clear the upcoming queue and generate a new one |
+    | Run Telnet command | `PUT` | `/admin/debug/station/{station_id}/telnet` | Manually run a Telnet command on the station backend |
+
+    <Warning>
+      Debugging operations can disrupt live broadcast. Use them only in controlled scenarios.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="Miscellaneous">
+    Dashboard and observability endpoints available to authenticated users with appropriate access.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | Get dashboard stations | `GET` | `/frontend/dashboard/stations` | List stations manageable by the current user |
+    | Get dashboard charts | `PUT` | `/frontend/dashboard/charts` | Get measurements for the dashboard charts |
+    | Get notifications | `GET` | `/frontend/dashboard/notifications` | Show all notifications for the current account |
+    | Get Prometheus metrics | `GET` | `/prometheus` | Returns Prometheus measurements for this installation |
+
+    The Prometheus endpoint (`/prometheus`) is useful for integrating AzuraCast into external monitoring stacks such as Grafana.
+  </Accordion>
+</AccordionGroup>

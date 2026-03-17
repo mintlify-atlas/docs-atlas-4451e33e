@@ -1,0 +1,138 @@
+---
+title: Publishing
+description: Build, test, and publish n8n-nodes-azuracast to npm
+---
+
+## Pre-publish checklist
+
+Run the full validation pipeline before publishing:
+
+<Steps>
+  <Step title="Run validate:publish">
+    ```bash
+    npm run validate:publish
+    ```
+
+    This runs the following steps in sequence:
+
+    1. `npm run lint` — lint source files
+    2. `npm run build` — compile TypeScript
+    3. `npm run verify:operations` — verify 263/263 operation coverage against live OpenAPI
+    4. `npm run verify:ui` — verify UI metadata rendering integrity
+    5. `npm run simulate:local` — run local simulation for request/response behavior
+    6. `npm run pack:check` — confirm package contents
+    7. `npm run publish:dry-run` — confirm npm publish metadata
+
+    If any step fails, the pipeline stops and reports the issue.
+  </Step>
+
+  <Step title="Confirm package contents">
+    ```bash
+    npm run pack:check
+    ```
+
+    Runs `npm pack --dry-run` to show the exact files that will be included in the published tarball. Verify that `dist/` and `CHANGELOG.md` are present and no unintended files are included.
+  </Step>
+
+  <Step title="Confirm npm publish metadata">
+    ```bash
+    npm run publish:dry-run
+    ```
+
+    Runs `npm publish --dry-run` to confirm package name, version, tag, and other metadata before the actual publish.
+  </Step>
+
+  <Step title="Confirm action metadata rendering">
+    ```bash
+    npm run verify:ui
+    ```
+
+    Loads the compiled properties and checks that every resource and action label renders correctly in the n8n UI. See [Generating operations](/development/generating-operations) for details on what this checks.
+  </Step>
+</Steps>
+
+## n8n package requirements
+
+For n8n to discover and install a community node package, the `package.json` must meet these requirements:
+
+- **Package name** starts with `n8n-nodes-` or `@scope/n8n-nodes-`
+- **`keywords`** includes `n8n-community-node-package`
+- **`n8n` block** lists the built node and credential paths:
+
+```json
+"n8n": {
+  "n8nNodesApiVersion": 1,
+  "credentials": [
+    "dist/credentials/AzuraCastApi.credentials.js"
+  ],
+  "nodes": [
+    "dist/nodes/AzuraCast/AzuraCast.node.js"
+  ]
+}
+```
+
+<Warning>
+The paths in the `n8n` block must point to the compiled `dist/` files, not the TypeScript source. `verify:operations` checks that `package.json` lists exactly the expected node path.
+</Warning>
+
+## Publishing options
+
+### Recommended: release-it flow
+
+```bash
+npm run release
+```
+
+Uses [release-it](https://github.com/release-it/release-it) to bump the version, create a git tag, and publish. This is the recommended flow for maintainers.
+
+To publish immediately without the interactive prompts:
+
+```bash
+npm run release:publish
+```
+
+### GitHub Actions (automated)
+
+The repository includes `.github/workflows/publish.yml`. It triggers on any tag matching `v*.*.*` and on manual dispatch.
+
+To set up automated publishing:
+
+1. Create an npm access token with publish permissions
+2. Add it as a repository secret named `NPM_TOKEN`
+3. Push a version tag:
+
+```bash
+git tag v0.1.2
+git push origin v0.1.2
+```
+
+The workflow runs `validate:publish` before publishing and uses `--provenance` to attach npm provenance attestation.
+
+### Direct publish
+
+If you prefer to publish without release-it:
+
+```bash
+npm publish --access public
+```
+
+<Note>
+Scoped packages (names like `@scope/n8n-nodes-...`) require `--access public`. This package has `"publishConfig": { "access": "public" }` set in `package.json` so the access flag is applied automatically.
+</Note>
+
+## Versioning
+
+Use `npm version` to bump the version and create a git tag in one step:
+
+```bash
+# Patch release (0.1.2 → 0.1.3)
+npm version patch
+
+# Minor release (0.1.2 → 0.2.0)
+npm version minor
+
+# Major release (0.1.2 → 1.0.0)
+npm version major
+```
+
+Then run `npm run validate:publish` and publish using your preferred method.

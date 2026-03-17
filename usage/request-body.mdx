@@ -1,0 +1,130 @@
+---
+title: Request body
+description: Configure request body types for AzuraCast API calls
+---
+
+The AzuraCast node supports five body modes that cover every request type in the AzuraCast API. In most cases the node selects the correct mode automatically based on the OpenAPI metadata for the selected operation.
+
+## Body modes
+
+<Tabs>
+  <Tab title="None">
+    No request body is sent. Used for `GET`, `DELETE`, and other operations that do not accept a body.
+
+    The node sets `body: undefined` and no `Content-Type` header is added.
+  </Tab>
+
+  <Tab title="JSON">
+    The body is sent as a JSON object with `Content-Type: application/json`.
+
+    Example — creating a station webhook:
+
+    ```json
+    {
+      "name": "My Webhook",
+      "type": "discord",
+      "is_enabled": true,
+      "config": {
+        "webhook_url": "https://discord.com/api/webhooks/..."
+      }
+    }
+    ```
+  </Tab>
+
+  <Tab title="Raw">
+    The body is sent as a plain text string. The `Content-Type` header is determined by the endpoint's OpenAPI definition.
+
+    Use this when the API expects XML or another non-JSON text format.
+  </Tab>
+
+  <Tab title="Binary">
+    The body is the raw binary content of an n8n binary data item.
+
+    The node reads the binary buffer from the input item using the property name you specify in **Input Data Field Name** (default: `data`).
+
+    Use this for endpoints that accept a file as the entire request body (for example, importing a backup archive).
+  </Tab>
+
+  <Tab title="Multipart">
+    The body is sent as `multipart/form-data`. Text fields and an optional file upload are combined into a single multipart request.
+
+    The node constructs the form with:
+    - Text fields from the operation's body field definitions
+    - A binary file appended under the field name specified in **File Field Name** (default: `file`)
+
+    Use this for media upload endpoints such as `POST /api/station/{id}/files`.
+  </Tab>
+</Tabs>
+
+## Auto mode behavior
+
+When **Body Mode Override** is set to **Auto** (the default), the node determines the body mode from the operation's OpenAPI metadata:
+
+- Operations with no request body use `none`.
+- Operations with a JSON schema use `json` and render the individual fields.
+- Operations with `multipart/form-data` content type use `multipart`.
+- Required fields appear as top-level inputs in the node panel.
+- Optional fields appear in a collapsible collection labeled **Optional Body Fields** or **Optional Multipart Fields**.
+
+For multipart operations that include a binary (file) field:
+- **Input Data Field Name** — the name of the n8n binary property in the input item that contains the file (default: `data`).
+- **File Field Name** — the multipart form field name under which the file is submitted to the API (default: `file`).
+
+## Manual body mode override
+
+The **Body Mode Override** option in the **Advanced** section lets you replace the auto-detected body with a manually specified value. Use this when the auto-rendered fields do not match what a specific endpoint expects.
+
+<Tabs>
+  <Tab title="Auto">
+    Uses the operation-specific fields rendered from OpenAPI metadata. This is the default and recommended setting.
+  </Tab>
+
+  <Tab title="JSON">
+    Replaces the auto fields with a single **Manual JSON Body** editor.
+
+    Enter a valid JSON object:
+
+    ```json
+    {
+      "short_name": "my_station",
+      "name": "My Station",
+      "is_enabled": true
+    }
+    ```
+  </Tab>
+
+  <Tab title="Raw">
+    Replaces the body with a **Manual Raw Body** text area. The value is sent as-is.
+  </Tab>
+
+  <Tab title="Binary">
+    Sends the binary data from the n8n input item as the entire request body.
+
+    Set **Manual Input Data Field Name** to the name of the binary property (default: `data`).
+  </Tab>
+
+  <Tab title="Multipart Form-Data">
+    Combines a JSON object of text fields with an optional file upload.
+
+    - **Manual Multipart Fields (JSON)** — a JSON object of key/value pairs to send as form fields.
+    - **Manual Input Data Field Name** — binary property in the input item containing the file.
+    - **Manual Multipart File Field Name** — the form field name for the file (default: `file`).
+
+    Example **Manual Multipart Fields (JSON)**:
+
+    ```json
+    {
+      "title": "My Track",
+      "artist": "Artist Name"
+    }
+    ```
+  </Tab>
+
+  <Tab title="None">
+    No body is sent regardless of what the operation expects. Use this to suppress body generation for debugging or edge cases.
+  </Tab>
+</Tabs>
+
+<Note>
+Legacy workflows that use the old `bodyMode`, `jsonBody`, `rawBody`, or `multipartFields` parameters continue to work. When any of those fields are present and non-empty, the node uses the legacy body path instead of the auto-rendered fields.
+</Note>

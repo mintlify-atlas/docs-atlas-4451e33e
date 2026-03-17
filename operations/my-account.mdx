@@ -1,0 +1,69 @@
+---
+title: My account operations
+description: Manage your AzuraCast account, API keys, and authentication settings
+---
+
+<Note>
+  All My Account operations require a valid API key. Configure your AzuraCast credentials in n8n before using these operations.
+</Note>
+
+The **My Account** resource group covers everything related to the currently authenticated user: reading and updating profile details, managing personal API keys, configuring two-factor authentication (TOTP), and registering passkeys via WebAuthn.
+
+<AccordionGroup>
+  <Accordion title="Account Profile">
+    Read and update the profile of the currently logged-in user.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | Get my account | `GET` | `/frontend/account/me` | Show the details for your current logged-in account |
+    | Update my account | `PUT` | `/frontend/account/me` | Save changes to your logged-in account |
+    | Change password | `PUT` | `/frontend/account/password` | Change the password of your account |
+
+    All three operations require authentication. The `GET` response includes your display name, email address, assigned roles, and account preferences.
+  </Accordion>
+
+  <Accordion title="API Key Management">
+    Create, list, retrieve, and delete personal API keys associated with your account.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | List API keys | `GET` | `/frontend/account/api-keys` | List all API keys associated with your account |
+    | Get API key | `GET` | `/frontend/account/api-key/{id}` | Retrieve details for a single API key |
+    | Create API key | `POST` | `/frontend/account/api-keys` | Create a new API key associated with your account |
+    | Delete API key | `DELETE` | `/frontend/account/api-key/{id}` | Delete a single API key associated with your account |
+
+    **Parameters**
+
+    - `id` — The numeric ID of the API key, returned by the list or create operations.
+
+    <Note>
+      The full API key secret is only returned at creation time. Store it securely — it cannot be retrieved later.
+    </Note>
+  </Accordion>
+
+  <Accordion title="Two-Factor Authentication (TOTP)">
+    Manage TOTP-based two-factor authentication for your account.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | Get 2FA status | `GET` | `/frontend/account/two-factor` | Get the current two-factor authentication status of your account |
+    | Enable 2FA | `PUT` | `/frontend/account/two-factor` | Register a new two-factor authentication method |
+    | Disable 2FA | `DELETE` | `/frontend/account/two-factor` | Remove two-factor authentication from your account |
+  </Accordion>
+
+  <Accordion title="Passkeys (WebAuthn)">
+    Register and manage hardware passkeys or platform authenticators using the WebAuthn standard.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | List passkeys | `GET` | `/frontend/account/passkeys` | List currently registered passkeys |
+    | Get passkey | `GET` | `/frontend/account/passkey/{id}` | Get the details of a single passkey |
+    | Delete passkey | `DELETE` | `/frontend/account/passkey/{id}` | Delete a specified passkey by ID |
+    | Get WebAuthn registration options | `GET` | `/frontend/account/webauthn/register` | Get registration details for a new WebAuthn credential |
+    | Submit WebAuthn registration | `PUT` | `/frontend/account/webauthn/register` | Submit a new WebAuthn registration request |
+
+    **Parameters**
+
+    - `id` — The numeric ID of the passkey to retrieve or delete.
+  </Accordion>
+</AccordionGroup>

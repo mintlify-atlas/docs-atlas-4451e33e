@@ -1,0 +1,99 @@
+---
+title: Resources and operations
+description: Navigate AzuraCast resources and select operations in n8n
+---
+
+Every AzuraCast node interaction starts by selecting a **Resource** and an **Operation**. These two dropdowns determine which API endpoint the node calls and which fields are displayed.
+
+## Resource
+
+A resource maps to an official AzuraCast API tag — a logical grouping of related endpoints. For example, the `Stations Media` resource contains all endpoints for managing media files on a station.
+
+Resource values are derived from the OpenAPI tag names. The internal value follows the pattern `resource_<tag_slug>` (for example, `resource_stations_media`).
+
+## Operation
+
+An operation maps to a specific API endpoint within the selected resource. Operation labels are generated from the OpenAPI `operationId` field: underscores and hyphens are replaced with spaces, camelCase is split, and the result is title-cased.
+
+For example, `getStationMedia` becomes **Get Station Media**, or when scoped to the Stations Media resource and redundant tokens are removed, it may appear as **Get** or **List**.
+
+The operation's value is the raw `operationId` string from the OpenAPI spec.
+
+## All resource groups
+
+<AccordionGroup>
+  <Accordion title="Administration">
+    Administrative endpoints require an API key with administrator permissions.
+
+    | Sub-resource | Description |
+    |---|---|
+    | Backups | Create, list, download, and restore system backups |
+    | Custom Fields | Manage custom metadata fields for stations |
+    | Debugging | Access debug logs and diagnostic endpoints |
+    | General | Server status and administrative utilities |
+    | Roles | Create and manage user roles and permissions |
+    | Settings | Read and update global AzuraCast settings |
+    | Stations | Create, list, update, and delete stations |
+    | Storage Locations | Manage file storage backends |
+    | Users | Create, list, update, and delete user accounts |
+  </Accordion>
+
+  <Accordion title="My Account">
+    Endpoints for the currently authenticated user. Requires a valid API key.
+
+    Covers account profile, API key management, and two-factor authentication settings.
+  </Accordion>
+
+  <Accordion title="Miscellaneous">
+    Server-level utility endpoints that do not belong to a specific resource domain.
+
+    Includes endpoints such as server time, ping, and other standalone operations.
+  </Accordion>
+
+  <Accordion title="Public">
+    Public endpoints do not require an API key.
+
+    | Sub-resource | Description |
+    |---|---|
+    | Miscellaneous | Public utility endpoints |
+    | Now Playing | Live now-playing data for all or individual stations |
+    | Stations | Public station information and schedules |
+  </Accordion>
+
+  <Accordion title="Stations">
+    Station management endpoints. Most require an API key with station-level permissions.
+
+    | Sub-resource | Description |
+    |---|---|
+    | Broadcasting | Start, stop, and restart AutoDJ and streaming |
+    | General | Station status, info, and configuration |
+    | HLS Streams | Manage HLS stream configurations |
+    | Media | Upload, list, update, and delete media files |
+    | Mount Points | Manage Icecast/SHOUTcast mount points |
+    | Playlists | Create and manage playlists and scheduling |
+    | Podcasts | Manage podcast feeds and episodes |
+    | Queue | View and manage the upcoming broadcast queue |
+    | Remote Relays | Manage remote relay streams |
+    | Reports | Access listener and performance reports |
+    | SFTP Users | Manage SFTP access credentials |
+    | Streamers/DJs | Manage live DJ accounts and permissions |
+    | Web Hooks | Create and manage webhook integrations |
+  </Accordion>
+</AccordionGroup>
+
+## How operation labels are generated
+
+Operation display names go through several normalization steps:
+
+1. The `operationId` string (for example, `api_admin_backups_list`) is split on underscores and hyphens, and camelCase boundaries are detected.
+2. Known acronyms (`API`, `DJ`, `HLS`, `HTTP`, `SFTP`, `URL`, `XML`, `ID`) are uppercased.
+3. Tokens from the resource name that appear in the operation name are removed to avoid redundancy (for example, **Get Station Media** becomes **Get** when displayed under the Stations Media resource).
+4. If two operations in the same resource produce the same label, the HTTP method is appended in parentheses (for example, **Update (PUT)**).
+
+## Legacy operationId field
+
+Workflows created before the unified node can still pass an `operationId` parameter directly. The execution runtime resolves the operation from the global operation map using that value. The `operationId` takes precedence over the **Resource** + **Operation** selector pair when it is set and non-empty.
+
+<Note>
+The `operationId` field is not shown in the default node UI. It is only used when present in saved workflow JSON from earlier node versions. New workflows should use the **Resource** and **Operation** dropdowns.
+</Note>

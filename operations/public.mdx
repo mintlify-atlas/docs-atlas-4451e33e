@@ -1,0 +1,75 @@
+---
+title: Public operations
+description: Public AzuraCast API endpoints accessible without authentication
+---
+
+<Note>
+  All operations in this group are fully public — no API key is required. You can call these endpoints from any n8n workflow without configuring AzuraCast credentials.
+</Note>
+
+Public operations expose read-only data and a small set of listener-facing actions (such as song requests) that AzuraCast intentionally makes available without authentication. They are organised into three resource groups: **Now Playing**, **Stations**, and **Miscellaneous**.
+
+<AccordionGroup>
+  <Accordion title="Public Now Playing">
+    Returns real-time playback state for all stations or a single station. This is the primary data source for building listener widgets, overlays, and dashboards.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | Get all now playing | `GET` | `/nowplaying` | Full summary of all stations' current playback state |
+    | Get station now playing | `GET` | `/nowplaying/{station_id}` | Full summary of a single station's current playback state |
+    | Get station now playing art | `GET` | `/nowplaying/{station_id}/art` | Redirects to the current album art for the given station |
+
+    **Parameters**
+
+    - `station_id` — The numeric ID or short name of the station.
+
+    **Example: fetch now playing for a station**
+
+    Configure the AzuraCast node with:
+    - **Resource**: Public Now Playing
+    - **Operation**: Get station now playing
+    - **Station ID**: `1` (or the station's short name, e.g. `main_station`)
+
+    The response includes the currently playing track, listener count, stream URLs, and the upcoming song queue.
+  </Accordion>
+
+  <Accordion title="Public Stations">
+    Exposes station listings and public-facing station content, including on-demand tracks, schedules, song request queues, and public podcast feeds.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | List stations | `GET` | `/stations` | Returns a list of all public stations |
+    | Get station | `GET` | `/station/{station_id}` | Return information about a single station |
+    | Get schedule | `GET` | `/station/{station_id}/schedule` | Return upcoming and currently ongoing schedule entries |
+    | Get requestable songs | `GET` | `/station/{station_id}/requests` | Return a list of songs available for listener requests |
+    | Submit song request | `POST` | `/station/{station_id}/request/{request_id}` | Submit a song request |
+    | Get on-demand tracks | `GET` | `/station/{station_id}/ondemand` | List all tracks available on-demand |
+    | Download on-demand file | `GET` | `/station/{station_id}/ondemand/download/{media_id}` | Download an on-demand file by media unique ID |
+    | Get media art | `GET` | `/station/{station_id}/art/{media_id}` | Returns the album art for a song, or a generic image |
+    | Get streamer art | `GET` | `/station/{station_id}/streamer/{id}/art` | Gets the default album art for a streamer |
+    | List public podcasts | `GET` | `/station/{station_id}/public/podcasts` | List all visible public podcasts |
+    | Get public podcast | `GET` | `/station/{station_id}/public/podcast/{podcast_id}` | Get public information for a given podcast |
+    | List podcast episodes | `GET` | `/station/{station_id}/public/podcast/{podcast_id}/episodes` | List all visible episodes for a given podcast |
+    | Get podcast episode | `GET` | `/station/{station_id}/public/podcast/{podcast_id}/episode/{episode_id}` | Get information for a public podcast episode |
+    | Get podcast art | `GET` | `/station/{station_id}/podcast/{podcast_id}/art` | Gets the album art for a podcast |
+    | Get podcast episode art | `GET` | `/station/{station_id}/podcast/{podcast_id}/episode/{episode_id}/art` | Gets the album art for a podcast episode |
+    | Get podcast episode media | `GET` | `/station/{station_id}/podcast/{podcast_id}/episode/{episode_id}/media` | Gets the media file for a podcast episode |
+
+    **Parameters**
+
+    - `station_id` — Numeric ID or short name of the target station.
+    - `media_id` / `request_id` / `podcast_id` / `episode_id` — Resource-specific identifiers returned by the corresponding list operations.
+  </Accordion>
+
+  <Accordion title="Public Miscellaneous">
+    Server-level utility endpoints that return metadata about the AzuraCast installation itself.
+
+    | Operation | Method | Path | Description |
+    |-----------|--------|------|-------------|
+    | Get API status | `GET` | `/status` | Returns an affirmative response if the API is active |
+    | Get server time | `GET` | `/time` | Returns the current time in GMT and the user's local time zone (if logged in) |
+    | Get OpenAPI spec | `GET` | `/openapi.yml` | Returns the OpenAPI specification document for this installation |
+
+    These endpoints are useful for health checks, time synchronisation, and programmatic API exploration.
+  </Accordion>
+</AccordionGroup>
