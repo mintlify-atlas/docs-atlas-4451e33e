@@ -50,7 +50,7 @@ Stations operations cover the full lifecycle of managing a radio station: upload
     | Create directory | `POST` | `/station/{station_id}/files/mkdir` | Create a new directory in the media library |
     | Rename file or directory | `PUT` | `/station/{station_id}/files/rename` | Rename specified files or directories |
     | Batch action | `PUT` | `/station/{station_id}/files/batch` | Perform a batch action on files or directories |
-    | Get media art | `DELETE` | `/station/{station_id}/art/{media_id}` | Remove the album art for a track |
+     | Delete media art | `DELETE` | `/station/{station_id}/art/{media_id}` | Remove the album art for a track |
     | Set media art | `POST` | `/station/{station_id}/art/{media_id}` | Upload album art for a track |
     | Get waveform data | `GET` | `/station/{station_id}/waveform/{media_id}` | Get cached waveform data for the Visual Cue Editor |
     | Save waveform data | `POST` | `/station/{station_id}/waveform/{media_id}` | Save cached waveform data |
@@ -80,7 +80,8 @@ Stations operations cover the full lifecycle of managing a radio station: upload
     | Clear playback queue | `DELETE` | `/station/{station_id}/playlist/{id}/queue` | Reset the internal playback queue |
     | Reshuffle playlist | `PUT` | `/station/{station_id}/playlist/{id}/reshuffle` | Re-shuffle a shuffled playlist |
     | Get apply-to directories | `GET` | `/station/{station_id}/playlist/{id}/apply-to` | Get directories the playlist can be applied to |
-    | Apply playlist to directories | `PUT` | `/station/{station_id}/playlist/{id}/apply-to` | Apply the playlist to specified directories |
+     | Apply playlist to directories | `PUT` | `/station/{station_id}/playlist/{id}/apply-to` | Apply the playlist to specified directories |
+     | Import podcast playlist | `POST` | `/station/{station_id}/podcast/{podcast_id}/batch` | Import the contents of an uploaded playlist (PLS/M3U) file into the specified podcast |
   </Accordion>
 
   <Accordion title="Stations Queue">
