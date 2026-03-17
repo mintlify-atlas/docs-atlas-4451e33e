@@ -1,0 +1,81 @@
+{
+  "projectType": "sdk-library",
+  "projectName": "n8n-nodes-azuracast",
+  "projectDescription": "An n8n community node package that connects AzuraCast web radio platform with n8n workflow automation, providing full coverage of 263 AzuraCast OpenAPI operations across 18+ resource domains.",
+  "theme": "sequoia",
+  "primaryColor": "#848c8e",
+  "lightColor": "#11161e",
+  "darkColor": "#cfd0d2",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "installation",
+              "credentials",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Using the Node",
+            "pages": [
+              "usage/overview",
+              "usage/resources-and-operations",
+              "usage/request-body",
+              "usage/response-handling",
+              "usage/advanced-options"
+            ]
+          },
+          {
+            "group": "Operations Reference",
+            "pages": [
+              "operations/public",
+              "operations/my-account",
+              "operations/stations",
+              "operations/administration"
+            ]
+          },
+          {
+            "group": "Development",
+            "pages": [
+              "development/contributing",
+              "development/generating-operations",
+              "development/publishing"
+            ]
+          },
+          {
+            "group": "Resources",
+            "pages": [
+              "changelog"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Full AzuraCast OpenAPI coverage with 263/263 operations",
+    "Single unified AzuraCast node with operations grouped by resource/tag",
+    "Automatic request field rendering from OpenAPI metadata (path, query, body parameters)",
+    "Support for JSON, raw, binary, and multipart form-data request bodies",
+    "Auto-detection of response format (JSON, text, binary)",
+    "Public endpoint access without API key; protected endpoints with X-API-Key and Bearer auth",
+    "Backward compatibility for legacy operationId and JSON parameter workflows",
+    "Usable as an AI tool node in n8n"
+  ],
+  "publicApiSurface": [
+    "class AzuraCast (INodeType) — main n8n node",
+    "class AzuraCastApi (ICredentialType) — AzuraCast API credentials",
+    "createDomainOperationConfig(tag: string) — builds operation config for a resource tag",
+    "createUnifiedOperationConfig() — builds unified config for all resources",
+    "createResourceProperty() — returns n8n resource selector property",
+    "createResourceOperationProperty(tag, resourceValue?) — returns operation selector for a tag",
+    "createResourceFieldProperties(tag, resourceValue?) — returns field properties for a tag",
+    "createSharedAdvancedProperties() — returns shared advanced node properties",
+    "executeDomainNode(operationMap, fixedOperationId?) — shared execution runtime"
+  ]
+}
